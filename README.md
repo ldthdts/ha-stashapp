@@ -34,7 +34,7 @@ You can add as many image feeds as you like. Each feed is an image entity with i
 
 To add a feed, open the Stash integration, choose **Add image feed**, and fill in:
 
-- **Name**: the feed name. The entity is named `Stash <name>`.
+- **Name**: the feed name. Each feed gets its own device and image entity, both named after the feed.
 - **Tags**: Stash tag IDs. A random image must have at least one of them. Leave empty for any image.
 - **Auto refresh (seconds)**: optional. How often the feed picks a new image on its own, in seconds (for example `330` for 5½ minutes). Leave it empty to turn it off; the `stashapp.refresh_feed` service still works. The minimum is 10 seconds and the maximum is one week.
 
@@ -62,7 +62,7 @@ Picks a new random image for one or more image feed entities right away.
 ```yaml
 action: stashapp.refresh_feed
 target:
-  entity_id: image.stash_favourites
+  entity_id: image.favourites
 ```
 
 ### `stashapp.random_scene`

@@ -10,6 +10,7 @@ from homeassistant.config_entries import ConfigSubentry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import entity_platform
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util import dt as dt_util
@@ -18,13 +19,24 @@ from .api import StashClient, StashError
 from .const import (
     CONF_AUTO_REFRESH_SECONDS,
     CONF_TAGS,
+    DOMAIN,
     SERVICE_REFRESH_FEED,
     SUBENTRY_TYPE_FEED,
 )
 from .coordinator import StashConfigEntry
-from .entity import device_info
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _feed_device_info(entry: StashConfigEntry, subentry: ConfigSubentry) -> DeviceInfo:
+    """Give each feed its own device so a device never spans two subentries."""
+    return DeviceInfo(
+        identifiers={(DOMAIN, subentry.subentry_id)},
+        name=subentry.title,
+        manufacturer="Stash",
+        model="Image feed",
+        via_device=(DOMAIN, entry.entry_id),
+    )
 
 
 async def async_setup_entry(
@@ -68,9 +80,10 @@ class StashFeedImage(ImageEntity):
             CONF_AUTO_REFRESH_SECONDS, 0
         )
         self._content: bytes | None = None
-        self._attr_name = subentry.title
+        self._feed_title = subentry.title
+        self._attr_name = None
         self._attr_unique_id = subentry.subentry_id
-        self._attr_device_info = device_info(entry, client)
+        self._attr_device_info = _feed_device_info(entry, subentry)
 
     async def async_added_to_hass(self) -> None:
         """Schedule periodic refreshes and pick an initial image."""
@@ -95,7 +108,7 @@ class StashFeedImage(ImageEntity):
             found = await self._client.async_get_random_image(self._tags)
             if found is None:
                 raise ServiceValidationError(
-                    f"No images matched the tags of feed {self.name}"
+                    f"No images matched the tags of feed {self._feed_title}"
                 )
             content, content_type = await self._client.async_fetch_image(
                 found["image_url"]
@@ -117,7 +130,9 @@ class StashFeedImage(ImageEntity):
         try:
             await self.async_refresh_feed()
         except HomeAssistantError as err:
-            _LOGGER.warning("Could not refresh Stash feed %s: %s", self.name, err)
+            _LOGGER.warning(
+                "Could not refresh Stash feed %s: %s", self._feed_title, err
+            )
 
     async def async_image(self) -> bytes | None:
         """Return the bytes of the current image."""
