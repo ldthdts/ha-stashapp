@@ -36,7 +36,7 @@ To add a feed, open the Stash integration, choose **Add image feed**, and fill i
 
 - **Name**: the feed name. The entity is named `Stash <name>`.
 - **Tags**: Stash tag IDs. A random image must have at least one of them. Leave empty for any image.
-- **Auto refresh (minutes and seconds)**: optional. How often the feed picks a new image on its own, for example 5 minutes and 30 seconds. Leave both fields empty to turn it off; the `stashapp.refresh_feed` service still works. The minimum is 10 seconds and the maximum is one week.
+- **Auto refresh (seconds)**: optional. How often the feed picks a new image on its own, in seconds (for example `330` for 5½ minutes). Leave it empty to turn it off; the `stashapp.refresh_feed` service still works. The minimum is 10 seconds and the maximum is one week.
 
 Each feed can be edited later from its entry in the integration page, and changes take effect straight away.
 

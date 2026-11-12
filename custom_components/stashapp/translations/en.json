@@ -40,12 +40,11 @@
           "data": {
             "name": "Name",
             "tags": "Tag IDs",
-            "auto_refresh_minutes": "Auto refresh: minutes",
-            "auto_refresh_seconds": "Auto refresh: seconds"
+            "auto_refresh_seconds": "Auto refresh (seconds)"
           },
           "data_description": {
             "tags": "Stash tag IDs. Only images that have at least one of these tags are picked.",
-            "auto_refresh_minutes": "Optional. Pick a new image automatically at this interval. Leave both auto refresh fields empty to turn it off; the refresh_feed service still works."
+            "auto_refresh_seconds": "Optional. Seconds between automatic picks of a new image (minimum 10). Leave empty to turn it off; the refresh_feed service still works."
           }
         },
         "reconfigure": {
@@ -54,17 +53,16 @@
           "data": {
             "name": "Name",
             "tags": "Tag IDs",
-            "auto_refresh_minutes": "Auto refresh: minutes",
-            "auto_refresh_seconds": "Auto refresh: seconds"
+            "auto_refresh_seconds": "Auto refresh (seconds)"
           },
           "data_description": {
             "tags": "Stash tag IDs. Only images that have at least one of these tags are picked.",
-            "auto_refresh_minutes": "Optional. Pick a new image automatically at this interval. Leave both auto refresh fields empty to turn it off; the refresh_feed service still works."
+            "auto_refresh_seconds": "Optional. Seconds between automatic picks of a new image (minimum 10). Leave empty to turn it off; the refresh_feed service still works."
           }
         }
       },
       "error": {
-        "auto_refresh_too_short": "The auto refresh interval must be at least 10 seconds."
+        "auto_refresh_too_short": "Auto refresh must be at least 10 seconds, or left empty to turn it off."
       },
       "abort": {
         "reconfigure_successful": "Image feed updated."

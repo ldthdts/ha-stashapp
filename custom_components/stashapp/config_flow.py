@@ -27,12 +27,11 @@ from homeassistant.helpers.selector import (
 from .api import StashAuthenticationError, StashClient, StashError
 from .const import (
     CONF_API_KEY,
-    CONF_AUTO_REFRESH_INTERVAL,
-    CONF_AUTO_REFRESH_MINUTES,
     CONF_AUTO_REFRESH_SECONDS,
     CONF_TAGS,
     CONF_URL,
     DOMAIN,
+    MAX_AUTO_REFRESH_SECONDS,
     MIN_AUTO_REFRESH_SECONDS,
     SUBENTRY_TYPE_FEED,
 )
@@ -50,19 +49,10 @@ FEED_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_NAME): cv.string,
         vol.Optional(CONF_TAGS): TextSelector(TextSelectorConfig(multiple=True)),
-        vol.Optional(CONF_AUTO_REFRESH_MINUTES): NumberSelector(
-            NumberSelectorConfig(
-                min=0,
-                max=10080,
-                step=1,
-                unit_of_measurement="min",
-                mode=NumberSelectorMode.BOX,
-            )
-        ),
         vol.Optional(CONF_AUTO_REFRESH_SECONDS): NumberSelector(
             NumberSelectorConfig(
                 min=0,
-                max=59,
+                max=MAX_AUTO_REFRESH_SECONDS,
                 step=1,
                 unit_of_measurement="s",
                 mode=NumberSelectorMode.BOX,
@@ -80,33 +70,21 @@ def _to_graphql_url(url: str) -> str:
     return url
 
 
-def _auto_refresh_interval(user_input: dict[str, Any]) -> int:
-    """Total auto refresh interval in seconds; 0 means auto refresh is off."""
-    minutes = int(user_input.get(CONF_AUTO_REFRESH_MINUTES) or 0)
-    seconds = int(user_input.get(CONF_AUTO_REFRESH_SECONDS) or 0)
-    return minutes * 60 + seconds
-
-
-def _auto_refresh_suggestions(interval: int) -> dict[str, Any]:
-    """Split a stored interval back into the minutes and seconds fields."""
-    if not interval:
-        return {}
-    return {
-        CONF_AUTO_REFRESH_MINUTES: interval // 60,
-        CONF_AUTO_REFRESH_SECONDS: interval % 60,
-    }
+def _auto_refresh_seconds(user_input: dict[str, Any]) -> int:
+    """Auto refresh interval in seconds; 0 means auto refresh is off."""
+    return int(user_input.get(CONF_AUTO_REFRESH_SECONDS) or 0)
 
 
 def _feed_data(user_input: dict[str, Any]) -> dict[str, Any]:
     return {
         CONF_TAGS: user_input.get(CONF_TAGS) or [],
-        CONF_AUTO_REFRESH_INTERVAL: _auto_refresh_interval(user_input),
+        CONF_AUTO_REFRESH_SECONDS: _auto_refresh_seconds(user_input),
     }
 
 
 def _auto_refresh_too_short(user_input: dict[str, Any]) -> bool:
-    interval = _auto_refresh_interval(user_input)
-    return 0 < interval < MIN_AUTO_REFRESH_SECONDS
+    seconds = _auto_refresh_seconds(user_input)
+    return 0 < seconds < MIN_AUTO_REFRESH_SECONDS
 
 
 class StashFeedSubentryFlow(ConfigSubentryFlow):
@@ -150,8 +128,8 @@ class StashFeedSubentryFlow(ConfigSubentryFlow):
                 {
                     CONF_NAME: subentry.title,
                     CONF_TAGS: subentry.data.get(CONF_TAGS, []),
-                    **_auto_refresh_suggestions(
-                        subentry.data.get(CONF_AUTO_REFRESH_INTERVAL, 0)
+                    CONF_AUTO_REFRESH_SECONDS: subentry.data.get(
+                        CONF_AUTO_REFRESH_SECONDS, 0
                     ),
                 },
             )

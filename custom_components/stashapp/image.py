@@ -16,7 +16,7 @@ from homeassistant.util import dt as dt_util
 
 from .api import StashClient, StashError
 from .const import (
-    CONF_AUTO_REFRESH_INTERVAL,
+    CONF_AUTO_REFRESH_SECONDS,
     CONF_TAGS,
     SERVICE_REFRESH_FEED,
     SUBENTRY_TYPE_FEED,
@@ -64,8 +64,8 @@ class StashFeedImage(ImageEntity):
         self._entry = entry
         self._client = client
         self._tags: list[str] | None = subentry.data.get(CONF_TAGS) or None
-        self._auto_refresh_interval: int = subentry.data.get(
-            CONF_AUTO_REFRESH_INTERVAL, 0
+        self._auto_refresh_seconds: int = subentry.data.get(
+            CONF_AUTO_REFRESH_SECONDS, 0
         )
         self._content: bytes | None = None
         self._attr_name = subentry.title
@@ -75,12 +75,12 @@ class StashFeedImage(ImageEntity):
     async def async_added_to_hass(self) -> None:
         """Schedule periodic refreshes and pick an initial image."""
         await super().async_added_to_hass()
-        if self._auto_refresh_interval > 0:
+        if self._auto_refresh_seconds > 0:
             self.async_on_remove(
                 async_track_time_interval(
                     self.hass,
                     self._async_refresh_logged,
-                    timedelta(seconds=self._auto_refresh_interval),
+                    timedelta(seconds=self._auto_refresh_seconds),
                 )
             )
         self._entry.async_create_background_task(
