@@ -1,0 +1,94 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Stash",
+        "description": "Enter the URL of your Stash server. The API key is only needed if authentication is enabled in Stash.",
+        "data": {
+          "url": "URL",
+          "api_key": "API key"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate Stash",
+        "description": "Stash rejected the API key for {url}. Enter a new API key.",
+        "data": {
+          "api_key": "API key"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to Stash. Check the URL and that Stash is running.",
+      "invalid_auth": "The API key was rejected by Stash."
+    },
+    "abort": {
+      "already_configured": "This Stash server is already configured.",
+      "reauth_successful": "Re-authentication successful."
+    }
+  },
+  "config_subentries": {
+    "feed": {
+      "entry_type": "Image feed",
+      "initiate_flow": {
+        "user": "Add image feed",
+        "reconfigure": "Edit image feed"
+      },
+      "step": {
+        "user": {
+          "title": "Add image feed",
+          "description": "A feed shows a random image from Stash. Leave tags empty to pick from the whole library.",
+          "data": {
+            "name": "Name",
+            "tags": "Tag IDs",
+            "auto_refresh_minutes": "Auto refresh: minutes",
+            "auto_refresh_seconds": "Auto refresh: seconds"
+          },
+          "data_description": {
+            "tags": "Stash tag IDs. Only images that have at least one of these tags are picked.",
+            "auto_refresh_minutes": "Optional. Pick a new image automatically at this interval. Leave both auto refresh fields empty to turn it off; the refresh_feed service still works."
+          }
+        },
+        "reconfigure": {
+          "title": "Edit image feed",
+          "description": "Change the name, tags, or auto refresh interval of this feed.",
+          "data": {
+            "name": "Name",
+            "tags": "Tag IDs",
+            "auto_refresh_minutes": "Auto refresh: minutes",
+            "auto_refresh_seconds": "Auto refresh: seconds"
+          },
+          "data_description": {
+            "tags": "Stash tag IDs. Only images that have at least one of these tags are picked.",
+            "auto_refresh_minutes": "Optional. Pick a new image automatically at this interval. Leave both auto refresh fields empty to turn it off; the refresh_feed service still works."
+          }
+        }
+      },
+      "error": {
+        "auto_refresh_too_short": "The auto refresh interval must be at least 10 seconds."
+      },
+      "abort": {
+        "reconfigure_successful": "Image feed updated."
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "scenes": {"name": "Scenes"},
+      "images": {"name": "Images"},
+      "galleries": {"name": "Galleries"},
+      "performers": {"name": "Performers"},
+      "studios": {"name": "Studios"},
+      "tags": {"name": "Tags"},
+      "markers": {"name": "Scene markers"},
+      "scenes_played": {"name": "Scenes played"},
+      "total_play_count": {"name": "Total play count"},
+      "total_o_count": {"name": "Total O count"},
+      "active_jobs": {"name": "Active jobs"},
+      "scenes_size": {"name": "Scenes size"},
+      "images_size": {"name": "Images size"},
+      "scenes_duration": {"name": "Scenes duration"},
+      "total_play_duration": {"name": "Total play duration"},
+      "version": {"name": "Version"}
+    }
+  }
+}

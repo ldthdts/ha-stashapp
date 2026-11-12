@@ -1,0 +1,57 @@
+random_image:
+  name: Random image
+  description: Pick a random image from Stash and return its details. Use an image feed to show the picked image.
+  fields:
+    config_entry_id:
+      name: Stash server
+      description: Stash server to use. Only needed when more than one server is configured.
+      required: false
+      selector:
+        config_entry:
+          integration: stashapp
+    tags:
+      name: Tag IDs
+      description: Only pick images that have all of these Stash tag IDs.
+      required: false
+      selector:
+        text:
+          multiple: true
+
+random_scene:
+  name: Random scene
+  description: Pick a random scene from Stash and return its details.
+  fields:
+    config_entry_id:
+      name: Stash server
+      description: Stash server to use. Only needed when more than one server is configured.
+      required: false
+      selector:
+        config_entry:
+          integration: stashapp
+    tags:
+      name: Tag IDs
+      description: Only pick scenes that have all of these Stash tag IDs.
+      required: false
+      selector:
+        text:
+          multiple: true
+
+scan_library:
+  name: Scan library
+  description: Start a Stash metadata scan of the whole library.
+  fields:
+    config_entry_id:
+      name: Stash server
+      description: Stash server to use. Only needed when more than one server is configured.
+      required: false
+      selector:
+        config_entry:
+          integration: stashapp
+
+refresh_feed:
+  name: Refresh feed
+  description: Pick a new random image for an image feed, using the feed's tags.
+  target:
+    entity:
+      integration: stashapp
+      domain: image
