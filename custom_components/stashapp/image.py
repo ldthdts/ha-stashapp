@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timedelta
+from typing import override
+from urllib.parse import urlencode
 
 from homeassistant.components.image import ImageEntity
 from homeassistant.config_entries import ConfigSubentry
@@ -80,6 +82,7 @@ class StashFeedImage(ImageEntity):
             CONF_AUTO_REFRESH_SECONDS, 0
         )
         self._content: bytes | None = None
+        self._stash_id: str | None = None
         self._feed_title = subentry.title
         self._attr_name = None
         self._attr_unique_id = subentry.subentry_id
@@ -117,6 +120,7 @@ class StashFeedImage(ImageEntity):
             raise HomeAssistantError(str(err)) from err
 
         self._content = content
+        self._stash_id = found["id"]
         self._attr_content_type = content_type
         self._attr_image_last_updated = dt_util.utcnow()
         self._attr_extra_state_attributes = {
@@ -137,3 +141,12 @@ class StashFeedImage(ImageEntity):
     async def async_image(self) -> bytes | None:
         """Return the bytes of the current image."""
         return self._content
+
+    @property
+    @override
+    def entity_picture(self) -> str | None:
+        """Return the image URL, tagged with the Stash ID so clients refetch on change."""
+        picture = super().entity_picture
+        if picture is None or self._stash_id is None:
+            return picture
+        return f"{picture}&{urlencode({'stash_id': self._stash_id})}"
